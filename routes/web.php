@@ -55,6 +55,8 @@ Route::middleware('auth')->group(function () {
 
     // Gestión de clientes
     Route::prefix('clientes')->group(function () {
+        Route::get('/registrar', [ClienteController::class, 'create'])->name('clientes.registrar');
+
         Route::get('/', [ClienteController::class, 'index'])->name('clientes.index');
         Route::middleware('role:administrador')->group(function () {
             Route::post('/', [ClienteController::class, 'store'])->name('clientes.store');
@@ -182,6 +184,8 @@ Route::middleware('auth')->group(function () {
     });
     Route::prefix('reportes')->group(function () {
         Route::get('/', [ReporteController::class, 'index'])->name('reportes.index')->middleware('auth');
+        Route::get('/ventas', [ReportesController::class, 'ventas'])->name('reportes.ventas');
+        Route::get('/ventas/pdf', [ReportesController::class, 'pdfVentas'])->name('reportes.ventas.pdf');
 
         // Rutas para visualizar los reportes con filtros
         Route::get('/ingresos', [ReportesController::class, 'vistaIngresos'])->name('reportes.ingresos');

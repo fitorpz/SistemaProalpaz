@@ -92,4 +92,8 @@ class Preventa extends Model
     {
         return $this->belongsTo(Almacen::class);
     }
+    public function cargo()
+    {
+        return $this->hasOne(CargosCliente::class, 'preventa_id');
+    }
 }

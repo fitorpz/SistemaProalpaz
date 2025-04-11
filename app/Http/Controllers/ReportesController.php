@@ -8,6 +8,7 @@ use App\Models\Cliente;
 use App\Models\Preventa;
 use App\Models\Ingreso;
 use App\Models\Picking;
+use App\Models\DetallePreventa;
 use App\Models\Ruta;
 use App\Models\User;
 
@@ -124,5 +125,91 @@ class ReportesController extends Controller
         $pdf = Pdf::loadView('reportes.pdf.rutas', compact('rutas'));
 
         return $pdf->download('Reporte_Rutas.pdf');
+    }
+    // MÉTODO ventas()
+    public function ventas(Request $request)
+    {
+        $usuarios = User::where('rol', 'like', '%ventas%')->get();
+
+        // Traer todos los detalles_preventa con relaciones
+        $detalles = DetallePreventa::with(['preventa.cliente', 'preventa.preventista', 'preventa.cargo', 'producto'])
+            ->whereHas('preventa', function ($query) use ($request) {
+                if ($request->filled('usuario_id')) {
+                    $query->where('preventista_id', $request->usuario_id);
+                }
+
+                if ($request->filled('del')) {
+                    $query->whereDate('fecha_entrega', '>=', $request->del);
+                }
+
+                if ($request->filled('al')) {
+                    $query->whereDate('fecha_entrega', '<=', $request->al);
+                }
+            })
+            ->get();
+
+        // Filtrar por modalidad de precio
+        $ventasCredito = $detalles->filter(fn($d) => str_contains($d->tipo_precio, 'credito'));
+        $ventasContado = $detalles->filter(fn($d) => str_contains($d->tipo_precio, 'contado'));
+        $ventasPromocion = $detalles->filter(fn($d) => $d->tipo_precio === 'precio_promocion');
+
+        return view('reportes.ventas.index', [
+            'usuarios' => $usuarios,
+            'ventasCredito' => $ventasCredito,
+            'ventasContado' => $ventasContado,
+            'ventasPromocion' => $ventasPromocion,
+            'totalCredito' => $ventasCredito->sum('subtotal'),
+            'totalContado' => $ventasContado->sum('subtotal'),
+            'totalPromocion' => $ventasPromocion->sum('subtotal'),
+            'request' => $request
+        ]);
+    }
+
+
+
+    public function pdfVentas(Request $request)
+    {
+        // Traer todos los detalles_preventa con relaciones
+        $detalles = DetallePreventa::with(['preventa.cliente', 'preventa.preventista', 'producto'])
+            ->whereHas('preventa', function ($query) use ($request) {
+                if ($request->filled('usuario_id')) {
+                    $query->where('preventista_id', $request->usuario_id);
+                }
+
+                if ($request->filled('del')) {
+                    $query->whereDate('fecha_entrega', '>=', $request->del);
+                }
+
+                if ($request->filled('al')) {
+                    $query->whereDate('fecha_entrega', '<=', $request->al);
+                }
+            })
+            ->get();
+
+        // Separar por tipo de precio
+        $ventasCredito = $detalles->filter(fn($item) => str_contains($item->tipo_precio, 'credito'));
+        $ventasContado = $detalles->filter(fn($item) => str_contains($item->tipo_precio, 'contado'));
+        $ventasPromocion = $detalles->filter(fn($item) => $item->tipo_precio === 'precio_promocion');
+
+        // Calcular totales
+        $totalCredito = $ventasCredito->sum('subtotal');
+        $totalContado = $ventasContado->sum('subtotal');
+        $totalPromocion = $ventasPromocion->sum('subtotal');
+
+        // Info del preventista (si aplica)
+        $usuario = $request->filled('usuario_id') ? User::find($request->usuario_id) : null;
+
+        $pdf = Pdf::loadView('reportes.pdf.ventas', compact(
+            'ventasCredito',
+            'ventasContado',
+            'ventasPromocion',
+            'totalCredito',
+            'totalContado',
+            'totalPromocion',
+            'usuario',
+            'request'
+        ))->setPaper('A4', 'portrait');
+
+        return $pdf->stream('Reporte_Ventas.pdf');
     }
 }

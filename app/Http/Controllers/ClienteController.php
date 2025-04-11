@@ -43,6 +43,11 @@ class ClienteController extends Controller
 
         return view('clientes.index', compact('clientes', 'usuarios'));
     }
+    public function create()
+    {
+        return view('clientes.crear');
+    }
+
 
     public function generarPDFConFiltros(Request $request)
     {

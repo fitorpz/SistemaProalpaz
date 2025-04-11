@@ -6,18 +6,19 @@
     <p class="text-center">Genera y descarga reportes en PDF de cada módulo.</p>
 
     <div class="row mt-4">
-        <!-- Reporte de Clientes -->
+        <!-- Reporte de Ventas -->
         <div class="col-md-6 col-lg-3 mb-4 d-flex">
             <div class="card text-center shadow-sm flex-fill">
-                <div class="card-header bg-primary text-white">
-                    <i class="fas fa-warehouse me-2"></i> Reporte de Ingresos
+                <div class="card-header bg-danger text-white">
+                    <i class="fas fa-cash-register me-2"></i> Reporte de Ventas
                 </div>
                 <div class="card-body">
-                    <p>Genera un reporte detallado de los Ingresos registrados.</p>
-                    <a href="{{ route('reportes.ingresos') }}" class="btn btn-primary">Ir a Reporte</a>
+                    <p>Consulta y genera reportes de las ventas realizadas.</p>
+                    <a href="{{ route('reportes.ventas') }}" class="btn btn-danger">Ir a Reporte</a>
                 </div>
             </div>
         </div>
+
         <!-- Reporte de Preventas -->
         <div class="col-md-6 col-lg-3 mb-4 d-flex">
             <div class="card text-center shadow-sm flex-fill">

@@ -38,8 +38,10 @@
         <i class="fas fa-users me-2"></i>Gestión de Clientes
     </h4>
 
-    <!-- Botón para crear cliente -->
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createClienteModal">Registrar Cliente</button>
+    <!-- Botón para redirigir a la nueva vista de registro -->
+    <a href="{{ route('clientes.registrar') }}" class="btn btn-primary mb-3">
+        <i class="fas fa-user-plus"></i> Registrar Cliente
+    </a>
 
     <!-- 📌 Filtros Mejorados y Responsivos -->
     <form method="GET" action="{{ route('clientes.index') }}" class="mb-3">
