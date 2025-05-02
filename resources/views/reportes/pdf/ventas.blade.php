@@ -23,6 +23,7 @@ $logoPath = public_path('logoHeader.png');
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Reporte de Ventas</title>
@@ -38,7 +39,8 @@ $logoPath = public_path('logoHeader.png');
             margin-bottom: 20px;
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid #000;
             padding: 4px;
         }
@@ -65,6 +67,7 @@ $logoPath = public_path('logoHeader.png');
         }
     </style>
 </head>
+
 <body>
     <table style="width: 100%; margin-bottom: 20px; border: none;">
         <tr>
@@ -74,8 +77,17 @@ $logoPath = public_path('logoHeader.png');
             </td>
             <td style="width: 50%; text-align: right; vertical-align: top; border: none;">
                 <strong>PREVENTISTA:</strong> {{ $usuario->nombre ?? 'Todos' }}<br>
+                <strong>ALMACÉN:</strong> {{ $almacenNombre ?? 'Todos' }}<br>
+                @if($request->filled('mes'))
+                @php
+                $mesNombre = \Carbon\Carbon::create()->month($request->mes)->locale('es')->isoFormat('MMMM');
+                @endphp
+                <strong>MES:</strong> {{ ucfirst($mesNombre) }}<br>
+                @else
                 <strong>DEL:</strong> {{ $request->del ?? '---' }}<br>
                 <strong>AL:</strong> {{ $request->al ?? '---' }}<br>
+                @endif
+
                 <strong>TOTAL CRÉDITO:</strong> Bs. {{ number_format($totalCredito, 2, ',', '.') }}<br>
                 <strong>TOTAL CONTADO:</strong> Bs. {{ number_format($totalContado, 2, ',', '.') }}<br>
                 <strong>TOTAL PROMOCIÓN:</strong> Bs. {{ number_format($totalPromocion, 2, ',', '.') }}<br>
@@ -112,11 +124,17 @@ $logoPath = public_path('logoHeader.png');
                 <td class="text-start">{{ $item->preventa->cargo->estado ?? 'Sin estado' }}</td>
             </tr>
             @empty
-            <tr><td colspan="6" class="text-start">Sin resultados</td></tr>
+            <tr>
+                <td colspan="6" class="text-start">Sin resultados</td>
+            </tr>
             @endforelse
         </tbody>
         <tfoot>
-            <tr><th colspan="4"></th><th class="text-end">Bs. {{ number_format($totalCredito, 2, ',', '.') }}</th><th></th></tr>
+            <tr>
+                <th colspan="4"></th>
+                <th class="text-end">Bs. {{ number_format($totalCredito, 2, ',', '.') }}</th>
+                <th></th>
+            </tr>
         </tfoot>
     </table>
 
@@ -147,11 +165,17 @@ $logoPath = public_path('logoHeader.png');
                 <td class="text-start">Pagado</td>
             </tr>
             @empty
-            <tr><td colspan="6" class="text-start">Sin resultados</td></tr>
+            <tr>
+                <td colspan="6" class="text-start">Sin resultados</td>
+            </tr>
             @endforelse
         </tbody>
         <tfoot>
-            <tr><th colspan="4"></th><th class="text-end">Bs. {{ number_format($totalContado, 2, ',', '.') }}</th><th></th></tr>
+            <tr>
+                <th colspan="4"></th>
+                <th class="text-end">Bs. {{ number_format($totalContado, 2, ',', '.') }}</th>
+                <th></th>
+            </tr>
         </tfoot>
     </table>
 
@@ -182,12 +206,19 @@ $logoPath = public_path('logoHeader.png');
                 <td class="text-start">Pagado</td>
             </tr>
             @empty
-            <tr><td colspan="6" class="text-start">Sin resultados</td></tr>
+            <tr>
+                <td colspan="6" class="text-start">Sin resultados</td>
+            </tr>
             @endforelse
         </tbody>
         <tfoot>
-            <tr><th colspan="4"></th><th class="text-end">Bs. {{ number_format($totalPromocion, 2, ',', '.') }}</th><th></th></tr>
+            <tr>
+                <th colspan="4"></th>
+                <th class="text-end">Bs. {{ number_format($totalPromocion, 2, ',', '.') }}</th>
+                <th></th>
+            </tr>
         </tfoot>
     </table>
 </body>
+
 </html>

@@ -184,8 +184,13 @@ Route::middleware('auth')->group(function () {
     });
     Route::prefix('reportes')->group(function () {
         Route::get('/', [ReporteController::class, 'index'])->name('reportes.index')->middleware('auth');
-        Route::get('/ventas', [ReportesController::class, 'ventas'])->name('reportes.ventas');
+        Route::get('/reportes/ventas', [ReportesController::class, 'ventas'])->name('reportes.ventas');
         Route::get('/ventas/pdf', [ReportesController::class, 'pdfVentas'])->name('reportes.ventas.pdf');
+        Route::get('/reportes/ventas/detallado', [ReportesController::class, 'ventasDetallado'])->name('reportes.ventas.detallado');
+        Route::get('/reportes/ventas/general', [ReportesController::class, 'ventasGeneral'])->name('reportes.ventas.general');
+        Route::get('/reportes/ventas/general/pdf', [ReportesController::class, 'ventasGeneralPdf'])->name('reportes.ventas.general.pdf');
+
+
 
         // Rutas para visualizar los reportes con filtros
         Route::get('/ingresos', [ReportesController::class, 'vistaIngresos'])->name('reportes.ingresos');

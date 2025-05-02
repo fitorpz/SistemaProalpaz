@@ -1,188 +1,40 @@
+<!-- resources/views/reportes/ventas/index.blade.php -->
 @extends('layouts.app')
 
 @section('content')
 <div class="container mt-5">
-    <h3 class="text-center mb-4">REPORTE DE VENTAS</h3>
+    <h3 class="text-center mb-4">Reporte de Ventas</h3>
 
-    <!-- Filtros -->
-    <form method="GET" class="row g-3 mb-4">
+    <div class="row justify-content-center">
+        <!-- Reporte Detallado -->
         <div class="col-md-4">
-            <label for="usuario_id" class="form-label">Preventista</label>
-            <select name="usuario_id" id="usuario_id" class="form-select">
-                <option value="">-- Todos --</option>
-                @foreach($usuarios as $usuario)
-                <option value="{{ $usuario->id }}" {{ request('usuario_id') == $usuario->id ? 'selected' : '' }}>
-                    {{ $usuario->nombre }}
-                </option>
-                @endforeach
-            </select>
+            <div class="card border-left-danger shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <i class="fas fa-receipt me-1"></i> Reporte Detallado de Ventas
+                </div>
+                <div class="card-body">
+                    Consulta cada venta realizada con detalle de productos.
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ route('reportes.ventas.detallado') }}" class="btn btn-danger">Ir al Reporte</a>
+                </div>
+            </div>
         </div>
-        <div class="col-md-3">
-            <label for="del" class="form-label">Desde</label>
-            <input type="date" name="del" id="del" class="form-control" value="{{ request('del') }}">
-        </div>
-        <div class="col-md-3">
-            <label for="al" class="form-label">Hasta</label>
-            <input type="date" name="al" id="al" class="form-control" value="{{ request('al') }}">
-        </div>
-        <div class="col-md-1 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-        </div>
-        <div class="col-md-1 d-flex align-items-end">
-            <a href="{{ route('reportes.ventas') }}" class="btn btn-secondary w-100">Restablecer</a>
-        </div>
-    </form>
 
-
-    <div class="col-md-12 text-end mb-3">
-        <a target="_blank" href="{{ route('reportes.ventas.pdf', request()->query()) }}" class="btn btn-danger">
-            <i class="fas fa-file-pdf"></i> Descargar PDF
-        </a>
-    </div>
-
-    <!-- Resumen -->
-    <div class="mb-3 d-flex justify-content-between">
-        <div>
-            <strong>PREVENTISTA:</strong>
-            {{ $usuarios->firstWhere('id', request('usuario_id'))->nombre ?? 'Todos' }}<br>
-            <strong>DEL:</strong> {{ request('del') ?? '---' }}<br>
-            <strong>AL:</strong> {{ request('al') ?? '---' }}
-        </div>
-        <div>
-            <strong>TOTAL VENTAS CRÉDITO:</strong> Bs. {{ number_format($totalCredito, 2, ',', '.') }}<br>
-            <strong>TOTAL VENTAS CONTADO:</strong> Bs. {{ number_format($totalContado, 2, ',', '.') }}<br>
-            <strong>TOTAL VENTAS PROMOCIÓN:</strong> Bs. {{ number_format($totalPromocion, 2, ',', '.') }}<br>
-            <strong>TOTAL GENERAL:</strong> Bs. {{ number_format($totalCredito + $totalContado + $totalPromocion, 2, ',', '.') }}
+        <!-- Reporte General -->
+        <div class="col-md-4">
+            <div class="card border-left-primary shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-chart-bar me-1"></i> Reporte General de Ventas
+                </div>
+                <div class="card-body">
+                    Muestra el resumen general de ventas agrupadas.
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ route('reportes.ventas.general') }}" class="btn btn-primary">Ir al Reporte</a>
+                </div>
+            </div>
         </div>
     </div>
-
-    <!-- Tabla Crédito -->
-    <h5 class="mt-4">VENTAS CRÉDITO</h5>
-    <table class="table table-bordered table-sm">
-        <thead class="table-secondary">
-            <tr>
-                <th class="text-start" style="white-space: nowrap; width: 1%;">NOTA DE REMISIÓN</th>
-                <th class="text-start">CLIENTE</th>
-                <th class="text-start">PRODUCTO</th>
-                <th class="text-end">CANTIDAD</th>
-                <th class="text-end">MONTO</th>
-                <th class="text-start">ESTADO</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($ventasCredito as $detalle)
-            <tr>
-                <td class="text-start" style="white-space: nowrap;">{{ $detalle->preventa->numero_pedido }}</td>
-                <td class="text-start">
-                    {{ $detalle->preventa->cliente->nombre_comercio ?? '-' }}<br>
-                    <small class="text-muted">{{ $detalle->preventa->cliente->nombre_propietario ?? '' }}</small>
-                </td>
-
-                <td class="text-start">{{ $detalle->producto->nombre_producto ?? 'Sin nombre' }}</td>
-                <td class="text-end">{{ $detalle->cantidad }}</td>
-                <td class="text-end">{{ number_format($detalle->subtotal, 2, ',', '.') }}</td>
-                <td class="text-start">{{ $detalle->preventa->cargo->estado ?? 'Sin estado' }}</td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="6" class="text-center">Sin resultados</td>
-            </tr>
-            @endforelse
-        </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="4"></th>
-                <th class="text-end">Bs. {{ number_format($totalCredito, 2, ',', '.') }}</th>
-                <th></th>
-            </tr>
-        </tfoot>
-    </table>
-
-
-    <!-- Tabla Contado -->
-    <h5 class="mt-5">VENTAS CONTADO</h5>
-    <table class="table table-bordered table-sm">
-        <thead class="table-secondary">
-            <tr>
-                <th class="text-start" style="white-space: nowrap; width: 1%;">NOTA DE REMISIÓN</th>
-                <th class="text-start">CLIENTE</th>
-                <th class="text-start">PRODUCTO</th>
-                <th class="text-end">CANTIDAD</th>
-                <th class="text-end">MONTO</th>
-                <th class="text-start">ESTADO</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($ventasContado as $detalle)
-            <tr>
-                <td class="text-start" style="white-space: nowrap;">{{ $detalle->preventa->numero_pedido }}</td>
-                <td class="text-start">
-                    {{ $detalle->preventa->cliente->nombre_comercio ?? '-' }}<br>
-                    <small class="text-muted">{{ $detalle->preventa->cliente->nombre_propietario ?? '' }}</small>
-                </td>
-                <td class="text-start">{{ $detalle->producto->nombre_producto ?? 'Sin nombre' }}</td>
-                <td class="text-end">{{ $detalle->cantidad }}</td>
-                <td class="text-end">{{ number_format($detalle->subtotal, 2, ',', '.') }}</td>
-                <td class="text-start">Pagado</td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="6" class="text-center">Sin resultados</td>
-            </tr>
-            @endforelse
-        </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="4"></th>
-                <th class="text-end">Bs. {{ number_format($totalContado, 2, ',', '.') }}</th>
-                <th></th>
-            </tr>
-        </tfoot>
-    </table>
-
-
-
-    <!-- Tabla Promoción -->
-    <h5 class="mt-5">VENTAS PROMOCIÓN</h5>
-    <table class="table table-bordered table-sm">
-        <thead class="table-secondary">
-            <tr>
-                <th class="text-start" style="white-space: nowrap; width: 1%;">NOTA DE REMISIÓN</th>
-                <th class="text-start">CLIENTE</th>
-                <th class="text-start">PRODUCTO</th>
-                <th class="text-end">CANTIDAD</th>
-                <th class="text-end">MONTO</th>
-                <th class="text-start">ESTADO</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($ventasPromocion as $detalle)
-            <tr>
-                <td class="text-start" style="white-space: nowrap;">{{ $detalle->preventa->numero_pedido }}</td>
-                <td class="text-start">
-                    {{ $detalle->preventa->cliente->nombre_comercio ?? '-' }}<br>
-                    <small class="text-muted">{{ $detalle->preventa->cliente->nombre_propietario ?? '' }}</small>
-                </td>
-                <td class="text-start">{{ $detalle->producto->nombre_producto ?? 'Sin nombre' }}</td>
-                <td class="text-end">{{ $detalle->cantidad }}</td>
-                <td class="text-end">{{ number_format($detalle->subtotal, 2, ',', '.') }}</td>
-                <td class="text-start">Pagado</td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="6" class="text-center">Sin resultados</td>
-            </tr>
-            @endforelse
-        </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="4"></th>
-                <th class="text-end">Bs. {{ number_format($totalPromocion, 2, ',', '.') }}</th>
-                <th></th>
-            </tr>
-        </tfoot>
-    </table>
-
-
 </div>
 @endsection
