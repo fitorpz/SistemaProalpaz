@@ -121,6 +121,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/exportar-pdf/{fecha}', [PickingController::class, 'exportarPDF'])->name('picking.exportarPDF');
         Route::post('/{id}/entregado', [PickingController::class, 'entregado'])->name('picking.entregado');
         Route::post('/{id}/no-entregado', [PickingController::class, 'noEntregado'])->name('picking.noEntregado');
+        Route::get('/editar/{id}', [PreventaController::class, 'editarDesdePicking'])->name('picking.editarPreventa');
+
     });
 
 

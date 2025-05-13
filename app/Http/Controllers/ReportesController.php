@@ -145,8 +145,13 @@ class ReportesController extends Controller
             'preventa',
             'preventa.cliente'
         ])->get();
+        $detalles = $detalles->filter(function ($detalle) {
+            return optional($detalle->preventa)->estado === 'Entregado';
+        });
+
 
         $ventas = [];
+
 
         foreach ($detalles as $detalle) {
             $almacenObj = $detalle->producto->almacen ?? null;
@@ -172,13 +177,15 @@ class ReportesController extends Controller
             }
 
             if (!isset($ventas[$almacen][$vendedor])) {
-                $ventas[$almacen][$vendedor] = ['credito' => 0, 'contado' => 0];
+                $ventas[$almacen][$vendedor] = ['credito' => 0, 'contado' => 0, 'promocion' => 0];
             }
 
             if (str_contains($detalle->tipo_precio, 'credito')) {
                 $ventas[$almacen][$vendedor]['credito'] += $detalle->subtotal;
             } elseif (str_contains($detalle->tipo_precio, 'contado')) {
                 $ventas[$almacen][$vendedor]['contado'] += $detalle->subtotal;
+            } elseif ($detalle->tipo_precio === 'precio_promocion') {
+                $ventas[$almacen][$vendedor]['promocion'] += $detalle->subtotal;
             }
         }
 
@@ -202,6 +209,7 @@ class ReportesController extends Controller
             'producto.almacen'
         ])
             ->whereHas('preventa', function ($query) use ($request) {
+                $query->where('estado', 'Entregado');
                 if ($request->filled('usuario_id')) {
                     $query->where('preventista_id', $request->usuario_id);
                 }
@@ -245,6 +253,8 @@ class ReportesController extends Controller
         // Traer todos los detalles_preventa con relaciones
         $detalles = DetallePreventa::with(['preventa.cliente', 'preventa.preventista', 'producto'])
             ->whereHas('preventa', function ($query) use ($request) {
+                $query->where('estado', 'Entregado');
+
                 if ($request->filled('usuario_id')) {
                     $query->where('preventista_id', $request->usuario_id);
                 }
@@ -310,7 +320,13 @@ class ReportesController extends Controller
             });
         })->get();
 
+
         $ventas = [];
+
+        $detalles = $detalles->filter(function ($d) {
+            return optional($d->preventa)->estado === 'Entregado';
+        });
+
 
         foreach ($detalles as $detalle) {
             $almacen = $detalle->producto->almacen->nombre ?? 'Sin almacén';
@@ -321,13 +337,15 @@ class ReportesController extends Controller
             }
 
             if (!isset($ventas[$almacen][$vendedor])) {
-                $ventas[$almacen][$vendedor] = ['credito' => 0, 'contado' => 0];
+                $ventas[$almacen][$vendedor] = ['credito' => 0, 'contado' => 0, 'promocion' => 0];
             }
 
             if (str_contains($detalle->tipo_precio, 'credito')) {
                 $ventas[$almacen][$vendedor]['credito'] += $detalle->subtotal;
             } elseif (str_contains($detalle->tipo_precio, 'contado')) {
                 $ventas[$almacen][$vendedor]['contado'] += $detalle->subtotal;
+            } elseif ($detalle->tipo_precio === 'precio_promocion') {
+                $ventas[$almacen][$vendedor]['promocion'] += $detalle->subtotal;
             }
         }
 

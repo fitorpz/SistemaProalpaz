@@ -679,6 +679,17 @@ class PreventaController extends Controller
         // Descargar el PDF con un nombre específico
         return $pdf->stream('preventa_' . $preventa->numero_pedido . '.pdf');
     }
+    public function editarDesdePicking($id)
+    {
+        $preventa = Preventa::with('detalles.producto', 'cliente', 'preventista')->findOrFail($id);
+        $clientes = Cliente::all();
+        $tiposVentas = TipoVenta::all();
+        $tiposVentasPermitidos = json_decode(auth()->user()->tipos_ventas_permitidos ?? '[]', true);
+
+        return view('preventas.editar', compact('preventa', 'clientes', 'tiposVentas', 'tiposVentasPermitidos'));
+
+    }
+
     public function generarNotaRemision($id)
     {
         $user = Auth::user();

@@ -220,46 +220,72 @@
                                         <!-- Almacenes Permitidos -->
                                         <div class="form-group">
                                             <label for="almacenes_permitidos">Almacenes Permitidos</label>
-                                            <div id="almacenes_permitidos">
-                                                @foreach ($almacenes as $almacen)
-                                                <div class="form-check">
-                                                    <input
-                                                        class="form-check-input"
-                                                        type="checkbox"
-                                                        name="almacenes_permitidos[]"
-                                                        value="{{ $almacen->id }}"
-                                                        id="almacen_{{ $user->id }}_{{ $almacen->id }}"
-                                                        {{ in_array($almacen->id, json_decode($user->almacenes_permitidos ?? '[]')) ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="almacen_{{ $user->id }}_{{ $almacen->id }}">
-                                                        {{ $almacen->nombre }}
-                                                    </label>
-                                                </div>
-                                                @endforeach
+                                            @foreach ($almacenes as $almacen)
+                                            <div class="form-check">
+                                                <input class="form-check-input"
+                                                    type="checkbox"
+                                                    name="almacenes_permitidos[]"
+                                                    value="{{ $almacen->id }}"
+                                                    id="almacen_{{ $user->id }}_{{ $almacen->id }}"
+                                                    {{ in_array($almacen->id, json_decode($user->almacenes_permitidos ?? '[]')) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="almacen_{{ $user->id }}_{{ $almacen->id }}">
+                                                    {{ $almacen->nombre }}
+                                                </label>
                                             </div>
+                                            @endforeach
                                         </div>
+
                                         <!-- Tipos de Ventas Permitidos -->
                                         <div class="form-group">
                                             <label for="tipos_ventas_permitidos">Tipos de Ventas Permitidos</label>
-                                            <div id="tipos_ventas_permitidos">
-                                                @foreach ($tiposVentas as $tipo)
-                                                <div class="form-check">
-                                                    <input
-                                                        class="form-check-input"
-                                                        type="checkbox"
-                                                        name="tipos_ventas_permitidos[]"
-                                                        value="{{ $tipo->id }}"
-                                                        id="tipo_venta_{{ $user->id }}_{{ $tipo->id }}"
-                                                        {{ in_array($tipo->id, $user->tipos_ventas_permitidos ?? []) ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="tipo_venta_{{ $user->id }}_{{ $tipo->id }}">
-                                                        {{ $tipo->tipo_venta }}
-                                                    </label>
-                                                </div>
-                                                @endforeach
+                                            @foreach ($tiposVentas as $tipo)
+                                            <div class="form-check">
+                                                <input class="form-check-input"
+                                                    type="checkbox"
+                                                    name="tipos_ventas_permitidos[]"
+                                                    value="{{ $tipo->id }}"
+                                                    id="tipo_venta_{{ $user->id }}_{{ $tipo->id }}"
+                                                    {{ in_array($tipo->id, $user->tipos_ventas_permitidos ?? []) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="tipo_venta_{{ $user->id }}_{{ $tipo->id }}">
+                                                    {{ $tipo->tipo_venta }}
+                                                </label>
                                             </div>
+                                            @endforeach
+                                        </div>
+
+                                        <!-- Permisos Personalizados -->
+                                        <!-- Permisos Personalizados -->
+                                        <div class="form-group">
+                                            <label>Permisos Personalizados</label>
+                                            @php
+                                            $permisos = $user->permisos_personalizados ?? [];
+                                            @endphp
+                                            @foreach ([
+                                            'ver_vendedores',
+                                            'ver_clientes',
+                                            'ver_preventas',
+                                            'ver_inventario',
+                                            'ver_contabilidad',
+                                            'ver_reporte_ventas_propio'
+                                            ] as $permiso)
+                                            <div class="form-check">
+                                                <input class="form-check-input"
+                                                    type="checkbox"
+                                                    name="permisos_personalizados[]"
+                                                    value="{{ $permiso }}"
+                                                    id="permiso_{{ $user->id }}_{{ $permiso }}"
+                                                    {{ in_array($permiso, $permisos) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="permiso_{{ $user->id }}_{{ $permiso }}">
+                                                    {{ ucwords(str_replace('_', ' ', $permiso)) }}
+                                                </label>
+                                            </div>
+                                            @endforeach
                                         </div>
 
                                     </form>
                                 </div>
+
+                                <!-- Footer con botón submit -->
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                     <button type="submit" class="btn btn-primary" form="editUserForm{{ $user->id }}">Guardar Cambios</button>
@@ -267,6 +293,7 @@
                             </div>
                         </div>
                     </div>
+
                 </td>
             </tr>
             @endforeach
@@ -350,7 +377,22 @@
                             @endforeach
                         </div>
                     </div>
-
+                    <div class="form-group">
+                        <label>Permisos Personalizados</label>
+                        @foreach ([
+                        'ver_vendedores',
+                        'ver_clientes',
+                        'ver_preventas',
+                        'ver_inventario',
+                        'ver_contabilidad',
+                        'ver_reporte_ventas_propio'
+                        ] as $permiso)
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="permisos_personalizados[]" value="{{ $permiso }}">
+                            <label class="form-check-label">{{ ucwords(str_replace('_', ' ', $permiso)) }}</label>
+                        </div>
+                        @endforeach
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">

@@ -50,45 +50,52 @@
     </div>
     @foreach($ventas as $almacen => $vendedores)
     <h5 class="mt-4 text-uppercase">Empresa: {{ $almacen }}</h5>
-    <table class="table table-bordered table-sm">
-        <thead class="table-secondary">
-            <tr>
-                <th class="text-start">Vendedor</th>
-                <th class="text-end">Crédito</th>
-                <th class="text-end">Contado</th>
-                <th class="text-end">Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php
-            $totalCredito = 0;
-            $totalContado = 0;
-            @endphp
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+            <thead class="table-secondary">
+                <tr>
+                    <th class="text-start">Vendedor</th>
+                    <th class="text-end">Crédito</th>
+                    <th class="text-end">Contado</th>
+                    <th class="text-end">Promoción</th>
+                    <th class="text-end">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                $totalCredito = 0;
+                $totalContado = 0;
+                @endphp
 
-            @foreach($vendedores as $vendedor => $valores)
-            @php
-            $subCredito = $valores['credito'];
-            $subContado = $valores['contado'];
-            $subTotal = $subCredito + $subContado;
-            $totalCredito += $subCredito;
-            $totalContado += $subContado;
-            @endphp
-            <tr>
-                <td class="text-start">{{ $vendedor }}</td>
-                <td class="text-end">{{ number_format($subCredito, 2, ',', '.') }}</td>
-                <td class="text-end">{{ number_format($subContado, 2, ',', '.') }}</td>
-                <td class="text-end">{{ number_format($subTotal, 2, ',', '.') }}</td>
-            </tr>
-            @endforeach
+                @foreach($vendedores as $vendedor => $valores)
+                @php
+                $subCredito = $valores['credito'];
+                $subContado = $valores['contado'];
+                $subPromocion = $valores['promocion'];
+                $subTotal = $subCredito + $subContado +$subPromocion;
+                $totalCredito += $subCredito;
+                $totalContado += $subContado;
+                $totalPromocion = ($totalPromocion ?? 0) + $subPromocion;
+                @endphp
+                <tr>
+                    <td class="text-start">{{ $vendedor }}</td>
+                    <td class="text-end">{{ number_format($subCredito, 2, ',', '.') }}</td>
+                    <td class="text-end">{{ number_format($subContado, 2, ',', '.') }}</td>
+                    <td class="text-end">{{ number_format($subPromocion, 2, ',', '.') }}</td>
+                    <td class="text-end">{{ number_format($subTotal, 2, ',', '.') }}</td>
+                </tr>
+                @endforeach
 
-            <tr class="fw-bold table-warning">
-                <td class="text-end">Total</td>
-                <td class="text-end">{{ number_format($totalCredito, 2, ',', '.') }}</td>
-                <td class="text-end">{{ number_format($totalContado, 2, ',', '.') }}</td>
-                <td class="text-end">{{ number_format($totalCredito + $totalContado, 2, ',', '.') }}</td>
-            </tr>
-        </tbody>
-    </table>
+                <tr class="fw-bold table-warning">
+                    <td class="text-end">Total</td>
+                    <td class="text-end">{{ number_format($totalCredito, 2, ',', '.') }}</td>
+                    <td class="text-end">{{ number_format($totalContado, 2, ',', '.') }}</td>
+                    <td class="text-end">{{ number_format($totalPromocion, 2, ',', '.') }}</td>
+                    <td class="text-end">{{ number_format($totalCredito + $totalContado + $totalPromocion, 2, ',', '.') }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     @endforeach
 </div>
 @endsection

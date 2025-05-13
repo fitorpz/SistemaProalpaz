@@ -18,6 +18,16 @@
             </div>
         </div>
 
+        @php
+        $permisos = is_array($user->permisos_personalizados)
+        ? $user->permisos_personalizados
+        : (is_string($user->permisos_personalizados)
+        ? json_decode($user->permisos_personalizados, true)
+        : []);
+        @endphp
+
+
+        @if(in_array('ver_inventario', $permisos))
         <!-- Módulo de Inventarios -->
         <div class="col-12 col-md-6 col-lg-4 mb-4 d-flex">
             <div class="card text-center shadow-sm flex-fill">
@@ -32,6 +42,9 @@
                 </div>
             </div>
         </div>
+        @endif
+
+
         @if(Auth::user()->rol == 'administrador')
         <!-- Módulo de Gestión de Usuarios -->
         <div class="col-12 col-md-6 col-lg-4 mb-4 d-flex">
@@ -68,7 +81,11 @@
         @endauth
 
         <!-- Módulo de Contabilidad -->
-        @if(auth()->user()->rol == 'administrador' || auth()->user()->rol == 'usuario_operador')
+        @php
+        $permisos = json_decode(auth()->user()->permisos_personalizados ?? '[]');
+        @endphp
+
+        @if(auth()->user()->rol == 'administrador' || (auth()->user()->rol == 'usuario_operador' && in_array('ver_contabilidad', $permisos)))
         <div class="col-12 col-md-6 col-lg-4 mb-4 d-flex">
             <div class="card text-center shadow-sm flex-fill">
                 <div class="card-header bg-success text-white fs-4">
@@ -83,6 +100,7 @@
             </div>
         </div>
         @endif
+
 
     </div>
 </div>

@@ -82,23 +82,27 @@ $logoPath = public_path('logoHeader.png');
                 <th class="text-start">Vendedor</th>
                 <th class="text-end">Crédito</th>
                 <th class="text-end">Contado</th>
+                <th class="text-end">Promoción</th>
                 <th class="text-end">Total</th>
             </tr>
         </thead>
         <tbody>
-            @php $totalCredito = 0; $totalContado = 0; @endphp
+            @php $totalCredito = 0; $totalContado = 0; $totalPromocion = 0;@endphp
             @foreach($vendedores as $vendedor => $valores)
                 @php
                     $subCredito = $valores['credito'];
                     $subContado = $valores['contado'];
-                    $subTotal = $subCredito + $subContado;
+                    $subPromocion = $valores['promocion'];
+                    $subTotal = $subCredito + $subContado + $subPromocion;
                     $totalCredito += $subCredito;
                     $totalContado += $subContado;
+                    $totalPromocion += $subPromocion;
                 @endphp
                 <tr>
                     <td class="text-start">{{ $vendedor }}</td>
                     <td class="text-end">{{ number_format($subCredito, 2, ',', '.') }}</td>
                     <td class="text-end">{{ number_format($subContado, 2, ',', '.') }}</td>
+                    <td class="text-end">{{ number_format($subPromocion, 2, ',', '.') }}</td>
                     <td class="text-end">{{ number_format($subTotal, 2, ',', '.') }}</td>
                 </tr>
             @endforeach
@@ -106,7 +110,8 @@ $logoPath = public_path('logoHeader.png');
                 <td class="text-end">Total</td>
                 <td class="text-end">{{ number_format($totalCredito, 2, ',', '.') }}</td>
                 <td class="text-end">{{ number_format($totalContado, 2, ',', '.') }}</td>
-                <td class="text-end">{{ number_format($totalCredito + $totalContado, 2, ',', '.') }}</td>
+                <td class="text-end">{{ number_format($totalPromocion, 2, ',', '.') }}</td>
+                <td class="text-end">{{ number_format($totalCredito + $totalContado +$totalPromocion, 2, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>

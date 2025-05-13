@@ -24,6 +24,7 @@ class User extends Authenticatable
         'rol',
         'almacenes_permitidos',
         'tipos_ventas_permitidos',
+        'permisos_personalizados',
     ];
     protected $hidden = [
         'password',
@@ -33,6 +34,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'tipos_ventas_permitidos' => 'array',
+        'permisos_personalizados' => 'array',
     ];
 
     public function clientes()

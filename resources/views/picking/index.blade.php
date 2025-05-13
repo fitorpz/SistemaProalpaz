@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <style>
     .custom-list {
         list-style: none;
@@ -256,6 +257,14 @@
                         </button>
 
                         @endif
+                        @if(in_array($preventa->estado, ['Pendiente', 'Preparado']))
+                        <a href="{{ route('picking.editarPreventa', $preventa->id) }}" class="btn btn-primary btn-sm w-100 mt-1">
+                            <i class="fas fa-edit"></i> Editar Preventa
+                        </a>
+                        @endif
+
+
+
 
 
                         @if($preventa->observacion_entrega)

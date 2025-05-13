@@ -37,6 +37,11 @@ class UserController extends Controller
             } elseif (!is_array($user->tipos_ventas_permitidos)) {
                 $user->tipos_ventas_permitidos = [];
             }
+            if (is_string($user->permisos_personalizados)) {
+                $user->permisos_personalizados = json_decode($user->permisos_personalizados, true);
+            } elseif (is_null($user->permisos_personalizados)) {
+                $user->permisos_personalizados = [];
+            }
         }
 
         return view('users.index', compact('users', 'almacenes', 'tiposVentas'));
@@ -87,6 +92,8 @@ class UserController extends Controller
             'almacenes_permitidos.*' => 'exists:almacenes,id',
             'tipos_ventas_permitidos' => 'nullable|array', // Nueva validación
             'tipos_ventas_permitidos.*' => 'exists:tipos_ventas,id', // Verifica que existan en la BD
+            'permisos_personalizados' => 'nullable|array',
+
         ]);
 
         $almacenesPermitidos = $request->almacenes_permitidos ?? [];
@@ -95,6 +102,10 @@ class UserController extends Controller
         $tiposVentasPermitidos = $request->tipos_ventas_permitidos ?? [];
         $jsonTiposVentas = json_encode($tiposVentasPermitidos);
 
+        $permisosPersonalizados = $request->permisos_personalizados ?? [];
+        $jsonPermisos = json_encode($permisosPersonalizados);
+
+
         $user = User::create([
             'nombre' => $request->nombre,
             'email' => $request->email,
@@ -102,6 +113,7 @@ class UserController extends Controller
             'rol' => $request->rol,
             'almacenes_permitidos' => $jsonAlmacenes, // No se toca
             'tipos_ventas_permitidos' => $jsonTiposVentas, // Se agrega sin modificar lo demás
+            'permisos_personalizados' => json_encode($request->permisos_personalizados ?? []),
         ]);
 
         return redirect()->route('users.index')->with('success', 'Usuario creado exitosamente.');
@@ -120,6 +132,8 @@ class UserController extends Controller
             'almacenes_permitidos' => 'nullable|array',
             'tipos_ventas_permitidos' => 'nullable|array', // Nueva validación
             'tipos_ventas_permitidos.*' => 'exists:tipos_ventas,id', // Verifica que existan en la BD
+            'permisos_personalizados' => 'nullable|array',
+
         ]);
 
         // Buscar usuario
@@ -132,6 +146,7 @@ class UserController extends Controller
             'rol' => $request->rol,
             'almacenes_permitidos' => json_encode($request->almacenes_permitidos ?? []), // No se toca
             'tipos_ventas_permitidos' => json_encode($request->tipos_ventas_permitidos ?? []), // Se agrega sin modificar lo demás
+            'permisos_personalizados' => json_encode($request->permisos_personalizados ?? []),
         ];
 
         // Solo actualizar la contraseña si el campo no está vacío
